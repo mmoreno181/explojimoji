@@ -12,7 +12,7 @@ def flatten_image(image):
     pixels[:,2] = np.ndarray.flatten(image[:,:,2])
     return pixels
 
-def cluster_pixels(pixels, k, centroids=None):
+def cluster_pixels(pixels, k=10):
     n = pixels.shape[0]
 
     kmeans = KMeans(n_clusters=int(k)).fit(pixels)
@@ -47,21 +47,35 @@ def get_average_emoji_pixels(path):
     average_pixel_list = np.zeros((3, len(filenames)))
     stdev_pixel_list = np.zeros((3, len(filenames)))
     for i in range(len(filenames)):
-        image = misc.imread(os.path.join('emojis/png_64', filenames[i]))
+        image = misc.imread(os.path.join(path, filenames[i]))
         print(filenames[i])
         average_pixel_list[:,i], stdev_pixel_list[:,i] = average_image_pixel(image)
     return average_pixel_list
 
-def main(filename):
-    print(get_average_emoji_pixels(filename))
-    # image = misc.imread(filename)
-    # average_pixel, stdev = average_image_pixel(image)
-    # print average_pixel, stdev
-    # color = np.zeros((1,1,3))
-    # color[:,:,0] = 79
-    # color[:,:,1] = 209
-    # color[:,:,2] = 217
-    #color = np.array([79., 209., 217.])
+def assign_emoji_to_cluster(cluster_centroids, average_emoji_pixel, emoji_data):
+    distance = np.zeros(average_emoji_pixel.shape[0])
+    assigned_emoji = []
+    for i in range(cluster_centroids.shape[0]):
+        distance = cluster_centroids[i,:] - average_emoji_pixel[1]
+        emoji_index = argmin(distance)
+        assigned_emoji.append(emoji_data[emoji_index]['unicode'])
+    return assigned_emoji
+
+def reconstruct_image(assigned_emoji, original_image):
+    rows = original_image.shape[0]
+    cols = original_image.shape[1]
+    new_flat_image_row = [None] * rows
+    new_flat_image = new_flat_image_row * cols
+    for i in range(0,rows):
+        for j in range(1,cols):
+            new_flat_image[i][j] = assigned_emoji[assignment[(j - 1) * rows + i]]
+
+def main(filename, average_emoji_pixel, emoji_data):
+    image = misc.imread(filename)
+    flattened_image = flatten_image(image)
+    assignment, centroids = cluster_pixels(flattened_image)
+    assigned_emoji = assign_emoji_to_cluster(centroids, average_emoji_pixel, emoji_data)
+    new_image = reconstruct_image(assigned_emoji, image)
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
