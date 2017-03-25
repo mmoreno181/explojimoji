@@ -54,18 +54,19 @@ def assign_emoji_to_cluster(cluster_centroids, average_emoji_pixel, emoji_data):
 def reconstruct_image(assigned_emoji, original_image):
     rows = original_image.shape[0]
     cols = original_image.shape[1]
-    new_flat_image_row = [None] * rows
-    new_flat_image = new_flat_image_row * cols
+    new_image_row = [None] * rows
+    new_image = new_image_row * cols
     for i in range(0,rows):
         for j in range(1,cols):
-            new_flat_image[i][j] = assigned_emoji[assignment[(j - 1) * rows + i]]
+            new_image[i][j] = assigned_emoji[assignment[(j - 1) * rows + i]]
+    return new_image
 
-def main(filename, average_emoji_pixel, emoji_data):
+def convert_image_to_emoji(filename, emoji_color, emoji_character, k=10):
     image = misc.imread(filename)
     flattened_image = flatten_image(image)
-    assignment, centroids = cluster_pixels(flattened_image)
-    assigned_emoji = assign_emoji_to_cluster(centroids, average_emoji_pixel, emoji_data)
+    assignment, centroids = cluster_pixels(flattened_image, k=k)
+    assigned_emoji = assign_emoji_to_cluster(centroids, emoji_color, emoji_character)
     new_image = reconstruct_image(assigned_emoji, image)
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    convert_image_to_emoji(sys.argv[1], sys.argv[2], sys.argv[3])
