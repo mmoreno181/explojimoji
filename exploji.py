@@ -22,30 +22,41 @@ def cluster_pixels(pixels, k, centroids=None):
     return assignment, centroid
 
 def average_image_pixel(image):
-
-    opaque_image = image[image[:,:,3]==255]
-    print(opaque_image)
+    if image.shape[2] == 4:
+        opaque_image = image[image[:,:,3]==255]
+    elif image.shape[2] == 3:
+        opaque_image = image[image[:,:,1]>=0]
+    else:
+        layer = image[image[:,:,0]>=0]
+        opaque_image = np.concatenate((layer,layer,layer), axis=1)
 
     average = np.zeros((1,1,3))
     average[:,:,0] = np.mean(opaque_image[:,0])
     average[:,:,1] = np.mean(opaque_image[:,1])
     average[:,:,2] = np.mean(opaque_image[:,2])
 
-    standard_dev = np.zeros((1,1,3))
-    standard_dev[:,:,0] = np.std(opaque_image[:,0])
-    standard_dev[:,:,1] = np.std(opaque_image[:,1])
-    standard_dev[:,:,2] = np.std(opaque_image[:,2])
+    standard_dev = np.zeros(3)
+    standard_dev[0] = np.std(opaque_image[:,0])
+    standard_dev[1] = np.std(opaque_image[:,1])
+    standard_dev[2] = np.std(opaque_image[:,2])
 
     return average, standard_dev
 
 def get_average_emoji_pixels(path):
-    return False
-
+    filenames = os.listdir(path)
+    average_pixel_list = np.zeros((3, len(filenames)))
+    stdev_pixel_list = np.zeros((3, len(filenames)))
+    for i in range(len(filenames)):
+        image = misc.imread(os.path.join('emojis/png_64', filenames[i]))
+        print(filenames[i])
+        average_pixel_list[:,i], stdev_pixel_list[:,i] = average_image_pixel(image)
+    return average_pixel_list
 
 def main(filename):
-    image = misc.imread(filename)
-    average_pixel, stdev = average_image_pixel(image)
-    print average_pixel, stdev
+    print(get_average_emoji_pixels(filename))
+    # image = misc.imread(filename)
+    # average_pixel, stdev = average_image_pixel(image)
+    # print average_pixel, stdev
     # color = np.zeros((1,1,3))
     # color[:,:,0] = 79
     # color[:,:,1] = 209
