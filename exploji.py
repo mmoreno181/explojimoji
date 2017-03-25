@@ -10,7 +10,7 @@ def flatten_image(image):
     pixels[:,2] = np.ndarray.flatten(image[:,:,2])
     return pixels
 
-def cluster(pixels, k, centroids=None):
+def cluster_pixels(pixels, k, centroids=None):
     n = pixels.shape[0]
 
     kmeans = KMeans(n_clusters=int(k)).fit(pixels)
@@ -19,6 +19,5 @@ def cluster(pixels, k, centroids=None):
 
     return assignment, centroid
 
-def average_image_pixel(image_file):
-    image = misc.imread(image_file)
-    
+def average_image_pixel(image):
+    return np.mean(image, axis=0)
