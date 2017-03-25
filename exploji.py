@@ -42,16 +42,6 @@ def average_image_pixel(image):
 
     return average, standard_dev
 
-def get_average_emoji_pixels(path):
-    filenames = os.listdir(path)
-    average_pixel_list = np.zeros((3, len(filenames)))
-    stdev_pixel_list = np.zeros((3, len(filenames)))
-    for i in range(len(filenames)):
-        image = misc.imread(os.path.join(path, filenames[i]))
-        print(filenames[i])
-        average_pixel_list[:,i], stdev_pixel_list[:,i] = average_image_pixel(image)
-    return average_pixel_list
-
 def assign_emoji_to_cluster(cluster_centroids, average_emoji_pixel, emoji_data):
     distance = np.zeros(average_emoji_pixel.shape[0])
     assigned_emoji = []
