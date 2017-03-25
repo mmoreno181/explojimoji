@@ -1,10 +1,15 @@
 import flask
 import numpy as np
+import urllib2
+import cStringIO
 import sys
+
+import exploji
 
 app = flask.Flask(__name__)
 
-EMOJI_DATA = None
+emoji_character = None
+emoji_color = None
 
 @app.route('/')
 def index():
@@ -14,14 +19,15 @@ def index():
 def exploji(url=None):
     if flask.request.method == 'POST' and flask.request.form is not None and 'url' in flask.request.form:
         url = flask.request.form['url']
-        
     elif flask.request.method == 'GET':
         if 'path' in flask.request.args:
             url = flask.request.args.get('path')
     if url is None:
        return flask.redirect('/')
     else:
-        return flask.render_template("exploji.html", source_image=url, output_string=u"Python is \U0001f600")
+        file = cStringIO.StringIO(urllib2.urlopen(url).read())
+        output_string = exploji.convert_image_to_emoji(file, emoji_character, emoji_color)
+        return flask.render_template("exploji.html", source_image=url, output_string=output_string)
             
 @app.route('/about')
 def about():
@@ -32,7 +38,9 @@ def about():
 
 def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=8080):
     csv_data = np.genfromtxt(color_csv, delimiter=',')
-    average_color = csv_data[:, 1:]
+    emoji_color = csv_data[:, 1:]
+    csv_data = np.genfromtxt(character_csv, delimiter=',')
+    emoji_character = csv_data[:, 1:]
     
     app.run(debug=debug, host=host, port=port)
 
