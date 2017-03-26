@@ -78,11 +78,12 @@ def reconstruct_image(assigned_emoji, original_image, assignment):
         out_image.append(new_image[i*cols: i*cols+cols])
     return out_image
 
-def convert_image_to_emoji(filename, emoji_color, emoji_character, k=4):
+def convert_image_to_emoji(filename, emoji_color, emoji_character, k=5, width=75):
     image = misc.imread(filename)
     rows = image.shape[0]
     cols = image.shape[1]
-    width = 75
+    print width
+    print type(width)
     height = (rows*width)/cols
     image = misc.imresize(image, (height, width))
     flattened_image = flatten_image(image)

@@ -19,24 +19,38 @@ def index():
     return flask.render_template("index.html", test=("\\U%08x" % 128513).decode('unicode-escape'))
 
 @app.route('/exploji', methods = ['GET', 'POST'])
-def exploji(url=None):
+def exploji(url=None, k=5, width=75):
+    global file_counter
+    global emoji_character
+    global emoji_color
+    global file_name
     if flask.request.method == 'POST' and flask.request.form is not None and 'url' in flask.request.form:
         url = flask.request.form['url']
+        k = int(flask.request.form['k'])
+        width = int(flask.request.form['width'])
+        file_counter += 1
+        urllib.urlretrieve(url, file_name.format(file_counter))
+        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=k, width=width)
+        return flask.render_template("exploji.html", source_image=url, output_string=output_string)
     elif flask.request.method == 'GET':
         if 'path' in flask.request.args:
             url = flask.request.args.get('path')
+        if 'k' in flask.request.args:
+            k = int(flask.request.args.get('k'))
+        if 'width' in flask.request.args:
+            width = int(flask.request.args.get('width'))
     if url is None:
        return flask.redirect('/')
     else:
-        global file_counter
-        global emoji_character
-        global emoji_color
-        global file_name
-
         file_counter += 1
         urllib.urlretrieve(url, file_name.format(file_counter))
-        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=7)
-        return flask.render_template("exploji.html", source_image=url, output_string=output_string)
+        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=k, width=width)
+        out = ''
+        for row in output_string:
+            for character in row:
+                out += character
+            out+='<br>'
+        return out
 
 @app.route('/about')
 def about():
