@@ -74,4 +74,4 @@ def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=80):
     app.run(debug=debug, host=host, port=port)
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2])
+    main('col.csv', 'char.csv')
