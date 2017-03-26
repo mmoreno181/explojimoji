@@ -32,16 +32,12 @@ def exploji(url=None):
         global emoji_character
         global emoji_color
         global file_name
-        
+
         file_counter += 1
         urllib.urlretrieve(url, file_name.format(file_counter))
-        output_string = convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character)
-        # out2 = u'\U0001f34e'
-        # print output_string == out2
-        # with open('test.txt', 'wb+') as out:
-            # out.write(output_string)
+        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=7)
         return flask.render_template("exploji.html", source_image=url, output_string=output_string)
-            
+
 @app.route('/about')
 def about():
     #   TODO: add about template
@@ -49,18 +45,18 @@ def about():
 
 
 
-def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=8080):
+def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=80):
     global emoji_character
     global emoji_color
-    
+
     csv_data = np.genfromtxt(color_csv, delimiter=',')
     emoji_color = csv_data[:, 1:]
-    
+
     with open(character_csv, 'rb') as f:
         reader = csv.reader(f)
         emoji_character = list(reader)
     emoji_character = [a[1].decode('utf8') for a in emoji_character]
-    print emoji_character
+    # print emoji_character
     app.run(debug=debug, host=host, port=port)
 
 if __name__ == '__main__':

@@ -6,19 +6,24 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        
+
         <style>
             body {
                 padding-top: 70px;
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
             p.small {
-                line-height: 1;
-                font-size: 2px;
+                line-height: 0;
+                font-size: 7px;
+                white-space: nowrap;
+                text-align: center;
+            }
+            table {
+                border-spacing: 1px 0;
             }
         </style>
     </head>
-    
+
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
@@ -50,22 +55,26 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h1>Original vs Emoji Explojied Image</h1>
-                    
+
                 </div>
             </div>
         </div><!-- /.container -->
-                    
+
         <div class="col-sm-6">
             <img src={{source_image}} width=100%></img>
         </div>
-        <div class="col-sm-6">
-            <p class="small">
+        <div style="margin: 0;padding: 0">
+            <table>
             {% for row in output_string %}
-                {{ row }} <br />
+                <tr>
+                {% for character in row %}
+                    <td><p class="small">{{character}}</p></td>
+                {% endfor %}
+                </tr>
             {% endfor %}
-            </p>
+            </table>
         </div>
-                    
+
     </body>
 
 </html>
