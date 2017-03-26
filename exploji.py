@@ -46,7 +46,7 @@ def assign_emoji_to_cluster(cluster_centroids, emoji_color, emoji_character):
     distance = np.zeros(emoji_color.shape[0])
     assigned_emoji = []
     for i in range(cluster_centroids.shape[0]):
-        distance = cluster_centroids[i,:] - emoji_color[1]
+        distance = np.linalg.norm(cluster_centroids[i,:] - emoji_color[1])
         emoji_index = np.argmin(distance)
         assigned_emoji.append(emoji_character[emoji_index])
     return assigned_emoji
@@ -62,16 +62,17 @@ def reconstruct_image(assigned_emoji, original_image, assignment):
         out_image.append(new_image[i*cols: i*cols+cols])
     return out_image
 
-def convert_image_to_emoji(filename, emoji_color, emoji_character, k=10):
+def convert_image_to_emoji(filename, emoji_color, emoji_character, k=4):
     image = misc.imread(filename)
     flattened_image = flatten_image(image)
     assignment, centroids = cluster_pixels(flattened_image, k=k)
+    print centroids
     assigned_emoji = assign_emoji_to_cluster(centroids, emoji_color, emoji_character)
     new_image = reconstruct_image(assigned_emoji, image, assignment)
-    out_text = u""
+    out_text = []
+
     for row in new_image:
-        # print row
-        out_text += ' '.join(row) + '\n'
+        out_text.append(''.join([character.decode('unicode-escape') for character in row]))
     return out_text
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ import urllib
 import sys
 import csv
 
+
 from exploji import convert_image_to_emoji
 
 app = flask.Flask(__name__)
@@ -15,7 +16,7 @@ file_counter = 0
 
 @app.route('/')
 def index():
-    return flask.render_template("index.html")
+    return flask.render_template("index.html", test=("\\U%08x" % 128513).decode('unicode-escape'))
 
 @app.route('/exploji', methods = ['GET', 'POST'])
 def exploji(url=None):
@@ -33,12 +34,12 @@ def exploji(url=None):
         global file_name
         
         file_counter += 1
-        # URL = 'http://ecx.images-amazon.com/images/I/41qJGxrMW0L._SL500_AA300_.jpg'
-        # urllib.urlretrieve(URL, "000001.jpg")
-        # urllib.urlretrieve(URL, file_name.format(file_counter))
-        output_string = convert_image_to_emoji(file_name.format(1), emoji_color, emoji_character)
-        print type(output_string)
-        print output_string.encode('utf8')[0]
+        urllib.urlretrieve(url, file_name.format(file_counter))
+        output_string = convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character)
+        # out2 = u'\U0001f34e'
+        # print output_string == out2
+        # with open('test.txt', 'wb+') as out:
+            # out.write(output_string)
         return flask.render_template("exploji.html", source_image=url, output_string=output_string)
             
 @app.route('/about')
@@ -58,8 +59,8 @@ def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=8080):
     with open(character_csv, 'rb') as f:
         reader = csv.reader(f)
         emoji_character = list(reader)
-    emoji_character = [a[1].encode('utf8') for a in emoji_character]
-    print emoji_character[0]
+    emoji_character = [a[1].decode('utf8') for a in emoji_character]
+    print emoji_character
     app.run(debug=debug, host=host, port=port)
 
 if __name__ == '__main__':

@@ -12,6 +12,10 @@
                 padding-top: 70px;
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
+            p.small {
+                line-height: 1;
+                font-size: 2px;
+            }
         </style>
     </head>
     
@@ -47,17 +51,21 @@
                 <div class="col-lg-12 text-center">
                     <h1>Original vs Emoji Explojied Image</h1>
                     
-                    <div class="col-sm-6">
-                        <img src={{source_image}} width=100%></img>
-                    </div>
-                    <div class="col-sm-6">
-                        <p>{{output_string}}</p>
-                    </div>
-                    
-                    
                 </div>
             </div>
         </div><!-- /.container -->
+                    
+        <div class="col-sm-6">
+            <img src={{source_image}} width=100%></img>
+        </div>
+        <div class="col-sm-6">
+            <p class="small">
+            {% for row in output_string %}
+                {{ row }} <br />
+            {% endfor %}
+            </p>
+        </div>
+                    
     </body>
 
 </html>

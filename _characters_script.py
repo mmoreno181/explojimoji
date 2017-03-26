@@ -1,5 +1,5 @@
 import os
-filenames = os.listdir('emojis/png_64')
+filenames = os.listdir('emojis/png_64_2')
 for index, file in enumerate([f[0:-4] for f in filenames]):
     characters = file.split('-')
     out = u''
