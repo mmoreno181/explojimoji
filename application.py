@@ -16,7 +16,7 @@ file_counter = 0
 
 @application.route('/')
 def index():
-    return flask.render_template("index.html", test=("\\U%08x" % 128513).decode('unicode-escape'))
+    return flask.render_template("index.html", test=u'\U0001f601 \U0001f389')
 
 @application.route('/exploji', methods = ['GET', 'POST'])
 def exploji(url=None, k=5, width=75):
