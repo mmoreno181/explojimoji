@@ -8,7 +8,7 @@ TRANSPARENT = "\\U0001f95b"
 
 def flatten_image(image, transparent=False):
     n = image.shape[0] * image.shape[1]
-    if transparent:
+    if transparent and image.shape[2]==4:
         pixels = np.zeros((n, 4))
         pixels[:,0] = np.ndarray.flatten(image[:,:,0])
         pixels[:,1] = np.ndarray.flatten(image[:,:,1])
@@ -69,7 +69,7 @@ def reconstruct_image(assigned_emoji, original_image, assignment):
     new_image = []
     flat_image = flatten_image(original_image, transparent=True)
     for i in range(rows*cols):
-        if flat_image[i,3] == 0:
+        if flat_image.shape[1]==4 and flat_image[i,3] == 0:
             new_image.append(TRANSPARENT)
         else:
             new_image.append(assigned_emoji[assignment[i]])
