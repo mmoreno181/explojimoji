@@ -7,18 +7,18 @@ import csv
 
 from exploji import convert_image_to_emoji
 
-app = flask.Flask(__name__)
+application = flask.Flask(__name__)
 
 emoji_character = None
 emoji_color = None
 file_name = 'temp_file_{}.png'
 file_counter = 0
 
-@app.route('/')
+@application.route('/')
 def index():
     return flask.render_template("index.html", test=("\\U%08x" % 128513).decode('unicode-escape'))
 
-@app.route('/exploji', methods = ['GET', 'POST'])
+@application.route('/exploji', methods = ['GET', 'POST'])
 def exploji(url=None, k=5, width=75):
     global file_counter
     global emoji_character
@@ -52,7 +52,7 @@ def exploji(url=None, k=5, width=75):
             out+='<br>'
         return out
 
-@app.route('/about')
+@application.route('/about')
 def about():
     #   TODO: add about template
     return flask.render_template("about.html")
@@ -71,7 +71,7 @@ def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=80):
         emoji_character = list(reader)
     emoji_character = [a[1].decode('utf8') for a in emoji_character]
     # print emoji_character
-    app.run(debug=debug, host=host, port=port)
+    application.run(debug=debug, host=host, port=port)
 
 if __name__ == '__main__':
     main('col.csv', 'char.csv')
