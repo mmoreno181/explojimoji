@@ -81,8 +81,6 @@ def convert_image_to_emoji(filename, emoji_color, emoji_character, k=5, width=75
     image = misc.imread(filename)
     rows = image.shape[0]
     cols = image.shape[1]
-    print width
-    print type(width)
     height = (rows*width)/cols
     image = misc.imresize(image, (height, width))
     flattened_image = flatten_image(image)
