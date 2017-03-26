@@ -1,0 +1,5 @@
+Flask==0.11.1
+numpy==1.12.1+mkl
+scikit-learn==0.16.1
+scipy==0.19.0
+sklearn=0.0
