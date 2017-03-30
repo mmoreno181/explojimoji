@@ -1,50 +1,58 @@
 import flask
-import numpy as np
 import urllib
 import sys
-import csv
+import os
+import random
 
 
 from exploji import convert_image_to_emoji
+from setup import emoji_character, emoji_color
 
-application = flask.Flask(__name__)
+app = flask.Flask(__name__)
 
-emoji_character = None
-emoji_color = None
-file_name = 'temp_file_{}.png'
-file_counter = 0
+file_name = 'temp_{}.png'
 
-@application.route('/')
+@app.route('/')
 def index():
-    return flask.render_template("index.html", test=u'\U0001f601 \U0001f389')
+    return flask.render_template("index.html", message=u'\U0001f601 \U0001f389')
 
-@application.route('/exploji', methods = ['GET', 'POST'])
-def exploji(url=None, k=5, width=75):
-    global file_counter
-    global emoji_character
-    global emoji_color
+@app.route('/about')
+def about():
+    return flask.render_template("about.html")
+
+@app.route('/error')
+def error():
+    return '''<html><head><title>Oops...</title><meta http-equiv="refresh" content="3;url=/" /></head>
+                <body><h3><span style="color:red">An error occurred</span><br>Redirecting in 3 seconds...</h3>
+            </body></html>'''
+
+@app.route('/exploji', methods = ['GET'])
+def exploji_get(url=None, k=5, width=75):
     global file_name
-    if flask.request.method == 'POST' and flask.request.form is not None and 'url' in flask.request.form:
-        url = flask.request.form['url']
-        k = int(flask.request.form['k'])
-        width = int(flask.request.form['width'])
-        file_counter += 1
-        urllib.urlretrieve(url, file_name.format(file_counter))
-        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=k, width=width)
-        return flask.render_template("exploji.html", source_image=url, output_string=output_string)
-    elif flask.request.method == 'GET':
-        if 'path' in flask.request.args:
-            url = flask.request.args.get('path')
-        if 'k' in flask.request.args:
-            k = int(flask.request.args.get('k'))
-        if 'width' in flask.request.args:
-            width = int(flask.request.args.get('width'))
+    redirect = False
+
+    if 'url' in flask.request.args and not flask.request.args.get('url').strip() == '':
+        url = flask.request.args.get('url')
+    if 'k' in flask.request.args and not flask.request.args.get('k').strip() == '':
+        k = int(flask.request.args.get('k'))
+    if 'width' in flask.request.args and not flask.request.args.get('width').strip() == '':
+        width = int(flask.request.args.get('width'))
+
     if url is None:
-       return flask.redirect('/')
+        return flask.redirect('/error')
     else:
-        file_counter += 1
-        urllib.urlretrieve(url, file_name.format(file_counter))
-        output_string, dimension= convert_image_to_emoji(file_name.format(file_counter), emoji_color, emoji_character, k=k, width=width)
+        file_counter = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
+        file = file_name.format(file_counter)
+        urllib.urlretrieve(url, file)
+        try:
+            output_string, dimension = convert_image_to_emoji(file, emoji_color, emoji_character, k=k, width=width)
+        except:
+            redirect = True
+        finally:
+            os.remove(file)
+            if redirect:
+                return flask.redirect('/error')
+
         out = ''
         for row in output_string:
             for character in row:
@@ -52,26 +60,39 @@ def exploji(url=None, k=5, width=75):
             out+='<br>'
         return out
 
-@application.route('/about')
-def about():
-    #   TODO: add about template
-    return flask.render_template("about.html")
 
+@app.route('/exploji', methods = ['POST'])
+def exploji_post(url=None, k=5, width=75):
+    global file_name
+    redirect = False
 
+    if flask.request.form is not None:
+        if 'url' in flask.request.form and not flask.request.form['url'].strip() == '':
+            url = flask.request.form['url']
+        if 'k' in flask.request.form and not flask.request.form['k'].strip() == '':
+            k = int(flask.request.form['k'])
+        if 'width' in flask.request.form and not flask.request.form['width'].strip() == '':
+            width = int(flask.request.form['width'])
 
-def main(color_csv, character_csv, debug=True, host='127.0.0.1', port=80):
-    global emoji_character
-    global emoji_color
+    if url is None:
+        return flask.redirect('/error')
+    else:
+        print k, width
 
-    csv_data = np.genfromtxt(color_csv, delimiter=',')
-    emoji_color = csv_data[:, 1:]
+        file_counter = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
+        file = file_name.format(file_counter)
+        urllib.urlretrieve(url, file)
+        try:
+            output_string, dimension = convert_image_to_emoji(file, emoji_color, emoji_character, k=k, width=width)
+        except:
+            redirect = True
+        finally:
+            os.remove(file)
+            if redirect:
+                return flas
 
-    with open(character_csv, 'rb') as f:
-        reader = csv.reader(f)
-        emoji_character = list(reader)
-    emoji_character = [a[1].decode('utf8') for a in emoji_character]
-    # print emoji_character
-    application.run(debug=debug, host=host, port=port)
+        return flask.render_template("exploji.html", source_image=url, output_string=output_string)
+
 
 if __name__ == '__main__':
-    main('col.csv', 'char.csv')
+    app.run()
