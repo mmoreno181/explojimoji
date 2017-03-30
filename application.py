@@ -12,6 +12,7 @@ app = flask.Flask(__name__)
 
 file_name = 'temp_{}.png'
 
+
 @app.route('/')
 def index():
     return flask.render_template("index.html", message=u'\U0001f601 \U0001f389')
@@ -60,7 +61,6 @@ def exploji_get(url=None, k=5, width=75):
             out+='<br>'
         return out
 
-
 @app.route('/exploji', methods = ['POST'])
 def exploji_post(url=None, k=5, width=75):
     global file_name
@@ -77,8 +77,6 @@ def exploji_post(url=None, k=5, width=75):
     if url is None:
         return flask.redirect('/error')
     else:
-        print k, width
-
         file_counter = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
         file = file_name.format(file_counter)
         urllib.urlretrieve(url, file)
@@ -92,7 +90,6 @@ def exploji_post(url=None, k=5, width=75):
                 return flas
 
         return flask.render_template("exploji.html", source_image=url, output_string=output_string)
-
 
 if __name__ == '__main__':
     app.run()
