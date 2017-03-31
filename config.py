@@ -1,2 +1,2 @@
-color_csv = "col.csv"
-character_csv = "char.csv"
+color_csv = "static/col.csv"
+character_csv = "static/char.csv"
