@@ -87,7 +87,7 @@ def exploji_post(url=None, k=5, width=75):
         finally:
             os.remove(file)
             if redirect:
-                return flas
+                return flask.redirect('/error')
 
         return flask.render_template("exploji.html", source_image=url, output_string=output_string)
 
