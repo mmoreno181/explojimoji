@@ -127,4 +127,4 @@ def exploji_post(url=None, k=5, width=75):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
