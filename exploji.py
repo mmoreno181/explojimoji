@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 from scipy import misc
 import sys, os
 
-TRANSPARENT = "\\U0001f95b"
+TRANSPARENT = (u"\\U00002601", "https://static.xx.fbcdn.net/images/emoji.php/v8/zf4/1/32/2601.png")
 
 def flatten_image(image, transparent=False):
     n = image.shape[0] * image.shape[1]
@@ -29,27 +29,6 @@ def cluster_pixels(pixels, k=10):
 
     return assignment, centroid
 
-def average_image_pixel(image):
-    if image.shape[2] == 4:
-        opaque_image = image[image[:,:,3]==255]
-    elif image.shape[2] == 3:
-        opaque_image = image[image[:,:,1]>=0]
-    else:
-        layer = image[image[:,:,0]>=0]
-        opaque_image = np.concatenate((layer,layer,layer), axis=1)
-
-    average = np.zeros((1,1,3))
-    average[:,:,0] = np.mean(opaque_image[:,0])
-    average[:,:,1] = np.mean(opaque_image[:,1])
-    average[:,:,2] = np.mean(opaque_image[:,2])
-
-    standard_dev = np.zeros(3)
-    standard_dev[0] = np.std(opaque_image[:,0])
-    standard_dev[1] = np.std(opaque_image[:,1])
-    standard_dev[2] = np.std(opaque_image[:,2])
-
-    return average, standard_dev
-
 def assign_emoji_to_cluster(cluster_centroids, emoji_color, emoji_character):
     distance = np.zeros(emoji_color.shape[0])
     assigned_emoji = []
@@ -72,6 +51,7 @@ def reconstruct_image(assigned_emoji, original_image, assignment):
             new_image.append(TRANSPARENT)
         else:
             new_image.append(assigned_emoji[assignment[i]])
+    # print new_image
     out_image = []
     for i in range(rows):
         out_image.append(new_image[i*cols: i*cols+cols])
@@ -90,7 +70,8 @@ def convert_image_to_emoji(filename, emoji_color, emoji_character, k=5, width=75
     out_text = []
 
     for row in new_image:
-        out_text.append([character.decode('unicode-escape') for character in row])
+        out_text.append([(character.decode('unicode-escape'), url) for character, url in row])
+    # print out_text
     return out_text, (height, width)
 
 if __name__ == '__main__':

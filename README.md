@@ -8,7 +8,3 @@ This application takes in a png or bitmap image and uses Lloyd's algorithm to pe
 ## How to use:
 pip install -r requirements.txt <br>
 execute application.py
-
-## Website
-[Emoji Exploji Website](http://exploji.tk)
-
