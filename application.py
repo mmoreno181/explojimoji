@@ -26,11 +26,11 @@ def about():
 def error():
     valid_sources = ['/api']
     if 'source' in flask.request.args and flask.request.args.get('source') in valid_sources:
-        return '''<html><head><title>Oops...</title><meta http-equiv="refresh" content=3;url="/api"></head>
-                    <body><h3><span style="color:red">An error occurred</span><br>Redirecting in 3 seconds...</h3>
+        return '''<html><head><title>Oops...</title><meta http-equiv="refresh" content=5;url="/api"></head>
+                    <body><h3><span style="color:red">An error occurred</span><br>Redirecting in 5 seconds... <a href="/api">click here to manually redirect</a></h3>
                 </body></html>'''
-    return '''<html><head><title>Oops...</title><meta http-equiv="refresh" content=3;url="/"></head>
-                <body><h3><span style="color:red">An error occurred</span><br>Redirecting in 3 seconds...</h3>
+    return '''<html><head><title>Oops...</title><meta http-equiv="refresh" content=5;url="/"></head>
+                <body><h3><span style="color:red">An error occurred</span><br>Redirecting in 5 seconds... <a href="/">click here to manually redirect</a></h3>
             </body></html>'''
 
 @app.route('/api', methods = ['GET'])
